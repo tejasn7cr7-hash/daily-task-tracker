@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Task Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e11;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --text: #f0f0f5;
+    --accent: #c8f135;
+    --accent2: #ff6b6b;
+    --accent3: #54d8b1;
+    --low: #54d8b1;
+    --medium: #f7c948;
+    --high: #ff6b6b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── WELCOME SCREEN ── */
+  #welcomeScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, #1a2200 0%, var(--bg) 70%);
+  }
+  .university-badge {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 7px 20px;
+    border-radius: 30px;
+    margin-bottom: 18px;
+    animation: fadeIn 0.6s ease;
+  }
+  .welcome-university {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    animation: fadeIn 0.7s ease;
+  }
+  .welcome-subtitle {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 6px;
+    animation: fadeIn 0.8s ease;
+  }
+  .welcome-project {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    margin: 18px 0 40px;
+    animation: fadeIn 0.9s ease;
+    line-height: 1.2;
+  }
+
+  /* PROFILE FORM CARD */
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    animation: slideUp 0.5s ease;
+  }
+  .profile-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .profile-card p {
+    font-size: 0.83rem;
+    color: #666;
+    margin-bottom: 24px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888;
+    margin-bottom: 7px;
+  }
+  .form-input, .form-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
+  .form-select option { background: var(--surface); }
+
+  .btn-start {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-start:hover { background: #d4ff40; transform: translateY(-1px); }
+
+  /* ── MAIN APP ── */
+  #mainApp { display: none; }
+
+  header {
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: rgba(14,14,17,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .header-left { display: flex; flex-direction: column; }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .logo span { color: var(--accent); }
+  .header-uni { font-size: 0.68rem; color: #555; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 6px 14px 6px 8px;
+  }
+  .profile-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+  }
+  .profile-info { line-height: 1.2; }
+  .profile-name { font-size: 0.82rem; font-weight: 600; }
+  .profile-id { font-size: 0.68rem; color: #666; }
+
+  .date-badge {
+    font-size: 0.78rem;
+    color: #888;
+    background: var(--surface2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #666;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { color: var(--accent2); border-color: var(--accent2); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 24px 40px 0;
+  }
+  .tab {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    border: none;
+    background: var(--surface2);
+    color: #666;
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--surface); color: var(--accent); border-bottom: 2px solid var(--accent); }
+  .tab:hover:not(.active) { color: #aaa; }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 40px 80px;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #d4ff40; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: #888; border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #555; }
+
+  .habits-grid { display: flex; flex-direction: column; gap: 12px; }
+  .habit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .habit-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--hcolor, #6366f1);
+    border-radius: 4px 0 0 4px;
+  }
+  .habit-card:hover { border-color: #3a3a48; transform: translateY(-1px); }
+  .habit-card.done { background: #141418; }
+  .habit-card.done .habit-name { text-decoration: line-through; color: #555; }
+
+  .check-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--hcolor, #6366f1);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .check-btn:hover { transform: scale(1.1); }
+  .habit-card.done .check-btn { background: var(--hcolor, #6366f1); border-color: var(--hcolor, #6366f1); }
+
+  .habit-info { flex: 1; min-width: 0; }
+  .habit-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .habit-desc { font-size: 0.8rem; color: #666; }
+
+  .habit-stats { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
+  .stat { text-align: center; }
+  .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--accent); }
+  .stat-label { font-size: 0.68rem; color: #555; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .habit-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    color: #555;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { background: var(--surface2); color: var(--text); }
+  .icon-btn.delete:hover { color: var(--accent2); }
+
+  .tasks-list { display: flex; flex-direction: column; gap: 10px; }
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: all 0.2s;
+  }
+  .task-card:hover { border-color: #3a3a48; }
+  .task-card.done { background: #141418; }
+  .task-card.done .task-title { text-decoration: line-through; color: #555; }
+
+  .task-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.2s;
+  }
+  .task-card.done .task-check { background: var(--accent3); border-color: var(--accent3); color: #000; }
+
+  .task-info { flex: 1; }
+  .task-title { font-weight: 500; font-size: 0.95rem; margin-bottom: 4px; }
+  .task-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .priority-badge {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px;
+  }
+  .priority-badge.low { background: rgba(84,216,177,0.15); color: var(--low); }
+  .priority-badge.medium { background: rgba(247,201,72,0.15); color: var(--medium); }
+  .priority-badge.high { background: rgba(255,107,107,0.15); color: var(--high); }
+  .due-date { font-size: 0.75rem; color: #666; }
+  .due-date.overdue { color: var(--accent2); }
+  .task-actions { display: flex; gap: 4px; margin-top: 2px; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; }
+  .form-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical; min-height: 80px;
+  }
+  .form-textarea:focus { border-color: var(--accent); }
+
+  .color-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .color-swatch {
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent; transition: transform 0.15s;
+  }
+  .color-swatch:hover, .color-swatch.selected { transform: scale(1.15); border-color: white; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+  .stats-bar { display: flex; gap: 16px; margin-bottom: 28px; }
+  .stats-card {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+  }
+  .stats-card-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .stats-card-label { font-size: 0.75rem; color: #666; margin-top: 2px; }
+
+  .empty { text-align: center; padding: 60px 20px; color: #444; }
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+  .empty p { font-size: 0.9rem; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    header, main { padding-left: 20px; padding-right: 20px; }
+    .tabs { padding-left: 20px; }
+    .stats-bar { flex-wrap: wrap; }
+    .habit-stats { display: none; }
+    .welcome-project { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── WELCOME / PROFILE SCREEN ── -->
+<div id="welcomeScreen">
+  <div class="university-badge">🎓 Sapthagiri NPS University</div>
+  <div class="welcome-university">Sapthagiri NPS University</div>
+  <div class="welcome-subtitle">Mini Python Project</div>
+  <div class="welcome-project">Daily Task Tracker</div>
+
+  <div class="profile-card">
+    <h2>👋 Create Your Profile</h2>
+    <p>Enter your details to get started</p>
+
+    <div class="form-group">
+      <label class="form-label">Your Full Name *</label>
+      <input class="form-input" id="profileName" placeholder="e.g. Rahul Sharma" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Age *</label>
+      <input class="form-input" id="profileAge" type="number" placeholder="e.g. 20" min="1" max="120" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Gender</label>
+      <select class="form-select" id="profileGender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+        <option value="Prefer not to say">Prefer not to say</option>
+      </select>
+    </div>
+
+    <button class="btn-start" onclick="createProfile()">Create Profile & Start →</button>
+  </div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="mainApp">
+  <header>
+    <div class="header-left">
+      <div class="logo">Daily Task <span>Tracker</span></div>
+      <div class="header-uni">Sapthagiri NPS University</div>
+    </div>
+    <div class="header-right">
+      <div class="profile-chip">
+        <div class="profile-avatar" id="headerAvatar"></div>
+        <div class="profile-info">
+          <div class="profile-name" id="headerName"></div>
+          <div class="profile-id" id="headerId"></div>
+        </div>
+      </div>
+      <div class="date-badge" id="todayDate"></div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('habits', event)">🌱 Habits</button>
+    <button class="tab" onclick="switchTab('tasks', event)">✅ Tasks</button>
+  </div>
+
+  <main>
+    <div class="panel active" id="panel-habits">
+      <div class="stats-bar" id="habitStats"></div>
+      <div class="section-header">
+        <div class="section-title">Today's Habits</div>
+        <button class="btn btn-primary" onclick="openHabitModal()">+ Add Habit</button>
+      </div>
+      <div class="habits-grid" id="habitsList"></div>
+    </div>
+
+    <div class="panel" id="panel-tasks">
+      <div class="stats-bar" id="taskStats"></div>
+      <div class="section-header">
+        <div class="section-title">Tasks</div>
+        <button class="btn btn-primary" onclick="openTaskModal()">+ Add Task</button>
+      </div>
+      <div class="tasks-list" id="tasksList"></div>
+    </div>
+  </main>
+</div>
+
+<!-- HABIT MODAL -->
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <div class="modal-title" id="habitModalTitle">New Habit</div>
+    <div class="form-group">
+      <label class="form-label">Habit Name *</label>
+      <input class="form-input" id="habitName" placeholder="e.g. Morning meditation" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="form-input" id="habitDesc" placeholder="Optional note..." />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Color</label>
+      <div class="color-row" id="colorRow"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeHabitModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHabit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-title" id="taskModalTitle">New Task</div>
+    <div class="form-group">
+      <label class="form-label">Task Title *</label>
+      <input class="form-input" id="taskTitle" placeholder="e.g. Finish project report" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="taskDesc" placeholder="Optional details..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Priority</label>
+      <select class="form-select" id="taskPriority">
+        <option value="low">🟢 Low</option>
+        <option value="medium" selected>🟡 Medium</option>
+        <option value="high">🔴 High</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Due Date</label>
+      <input class="form-input" id="taskDue" type="date" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">⏰ Reminder Time</label>
+      <input class="form-input" id="taskReminder" type="time" />
+      <div style="font-size:0.72rem;color:#666;margin-top:5px;">Run <b>reminder.py</b> in a separate window to get desktop notifications</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeTaskModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#c8f135','#54d8b1','#ff6b6b','#f7c948','#7c9fff','#ff85e1','#ff9a56','#a78bfa'];
+let editHabitId = null;
+let editTaskId = null;
+let selectedColor = COLORS[0];
+let currentProfile = null;
+
+// ── PROFILE ──
+function generateId(name) {
+  const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,3);
+  const num = Math.floor(1000 + Math.random() * 9000);
+  return `DTT-${initials}${num}`;
+}
+
+function createProfile() {
+  const name = document.getElementById('profileName').value.trim();
+  const age = document.getElementById('profileAge').value.trim();
+  const gender = document.getElementById('profileGender').value;
+
+  if (!name) return alert('Please enter your name.');
+  if (!age || age < 1) return alert('Please enter a valid age.');
+
+  const profile = { name, age, gender, id: generateId(name) };
+  localStorage.setItem('dtt_profile', JSON.stringify(profile));
+  loadApp(profile);
+}
+
+function loadApp(profile) {
+  currentProfile = profile;
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+
+  // Set header info
+  document.getElementById('headerAvatar').textContent = profile.name[0].toUpperCase();
+  document.getElementById('headerName').textContent = profile.name;
+  document.getElementById('headerId').textContent = profile.id;
+
+  const now = new Date();
+  document.getElementById('todayDate').textContent = now.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+
+  renderColorRow();
+  loadHabits();
+  loadTasks();
+}
+
+function logout() {
+  if (!confirm('Logout? Your data will be saved.')) return;
+  localStorage.removeItem('dtt_profile');
+  location.reload();
+}
+
+// On page load — check if profile exists
+window.onload = function() {
+  const saved = localStorage.getItem('dtt_profile');
+  if (saved) {
+    loadApp(JSON.parse(saved));
+  }
+};
+
+function switchTab(tab, event) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ── HABITS ──
+async function loadHabits() {
+  const res = await fetch('/api/habits/');
+  const habits = await res.json();
+  const list = document.getElementById('habitsList');
+  const stats = document.getElementById('habitStats');
+
+  const total = habits.length;
+  const done = habits.filter(h => h.completed_today).length;
+  const maxStreak = habits.length ? Math.max(...habits.map(h => h.streak)) : 0;
+
+  stats.innerHTML = `
+    <div class="stats-card"><div class="stats-card-val">${done}/${total}</div><div class="stats-card-label">Completed Today</div></div>
+    <div class="stats-card"><div class="stats-card-val">${maxStreak}</div><div class="stats-card-label">Best Streak 🔥</div></div>
+    <div class="stats-card"><div class="stats-card-val">${total ? Math.round(done/total*100) : 0}%</div><div class="stats-card-label">Completion Rate</div></div>
+  `;
+
+  if (!habits.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🌱</div><p>No habits yet. Add your first one!</p></div>`;
+    return;
+  }
+
+  list.innerHTML = habits.map(h => `
+    <div class="habit-card ${h.completed_today ? 'done' : ''}" style="--hcolor:${h.color}">
+      <button class="check-btn" onclick="toggleHabit(${h.id})" style="border-color:${h.color}">
+        ${h.completed_today ? '✓' : ''}
+      </button>
+      <div class="habit-info">
+        <div class="habit-name">${h.name}</div>
+        ${h.description ? `<div class="habit-desc">${h.description}</div>` : ''}
+      </div>
+      <div class="habit-stats">
+        <div class="stat"><div class="stat-val">${h.streak}</div><div class="stat-label">Streak</div></div>
+        <div class="stat"><div class="stat-val">${h.total_completions}</div><div class="stat-label">Total</div></div>
+      </div>
+      <div class="habit-actions">
+        <button class="icon-btn" onclick="openEditHabit(${h.id}, '${h.name}', '${h.description}', '${h.color}')">✏️</button>
+        <button class="icon-btn delete" onclick="deleteHabit(${h.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleHabit(id) {
+  await fetch(`/api/habits/${id}/toggle`, {method:'POST'});
+  loadHabits();
+}
+
+async function deleteHabit(id) {
+  if (!confirm('Delete this habit?')) return;
+  await fetch(`/api/habits/${id}`, {method:'DELETE'});
+  loadHabits();
+}
+
+function openHabitModal() {
+  editHabitId = null;
+  document.getElementById('habitModalTitle').textContent = 'New Habit';
+  document.getElementById('habitName').value = '';
+  document.getElementById('habitDesc').value = '';
+  selectedColor = COLORS[0];
+  renderColorRow();
+  document.getElementById('habitModal').classList.add('open');
+}
+
+function openEditHabit(id, name, desc, color) {
+  editHabitId = id;
+  document.getElementById('habitModalTitle').textContent = 'Edit Habit';
+  document.getElementById('habitName').value = name;
+  document.getElementById('habitDesc').value = desc;
+  selectedColor = color;
+  renderColorRow();
+  document.getElementById('habitModal').classList.add('open');
+}
+
+function closeHabitModal() { document.getElementById('habitModal').classList.remove('open'); }
+
+function renderColorRow() {
+  document.getElementById('colorRow').innerHTML = COLORS.map(c => `
+    <div class="color-swatch ${c === selectedColor ? 'selected' : ''}" style="background:${c}" onclick="selectColor('${c}')"></div>
+  `).join('');
+}
+
+function selectColor(c) { selectedColor = c; renderColorRow(); }
+
+async function saveHabit() {
+  const name = document.getElementById('habitName').value.trim();
+  if (!name) return alert('Please enter a habit name.');
+  const body = { name, description: document.getElementById('habitDesc').value, color: selectedColor };
+  if (editHabitId) {
+    await fetch(`/api/habits/${editHabitId}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  } else {
+    await fetch('/api/habits/', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  }
+  closeHabitModal();
+  loadHabits();
+}
+
+// ── TASKS ──
+async function loadTasks() {
+  const res = await fetch('/api/tasks/');
+  const tasks = await res.json();
+  const list = document.getElementById('tasksList');
+  const stats = document.getElementById('taskStats');
+
+  const total = tasks.length;
+  const done = tasks.filter(t => t.is_done).length;
+  const high = tasks.filter(t => t.priority === 'high' && !t.is_done).length;
+
+  stats.innerHTML = `
+    <div class="stats-card"><div class="stats-card-val">${done}/${total}</div><div class="stats-card-label">Completed</div></div>
+    <div class="stats-card"><div class="stats-card-val">${high}</div><div class="stats-card-label">High Priority 🔴</div></div>
+    <div class="stats-card"><div class="stats-card-val">${total - done}</div><div class="stats-card-label">Remaining</div></div>
+  `;
+
+  if (!tasks.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><p>No tasks yet. Add one to get started!</p></div>`;
+    return;
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  list.innerHTML = tasks.map(t => {
+    const overdue = t.due_date && t.due_date < today && !t.is_done;
+    return `
+    <div class="task-card ${t.is_done ? 'done' : ''}">
+      <button class="task-check" onclick="toggleTask(${t.id})">${t.is_done ? '✓' : ''}</button>
+      <div class="task-info">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">
+          <span class="priority-badge ${t.priority}">${t.priority}</span>
+          ${t.due_date ? `<span class="due-date ${overdue ? 'overdue' : ''}">📅 ${overdue ? '⚠ ' : ''}${t.due_date}</span>` : ''}
+          ${t.reminder_time ? `<span style="font-size:0.75rem;color:#54d8b1">⏰ ${t.reminder_time}</span>` : ''}
+          ${t.description ? `<span style="font-size:0.75rem;color:#555">${t.description}</span>` : ''}
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="icon-btn" onclick="openEditTask(${t.id}, '${t.title.replace(/'/g,"\\'")}', '${(t.description||'').replace(/'/g,"\\'")}', '${t.priority}', '${t.due_date||''}', '${t.reminder_time||''}')">✏️</button>
+        <button class="icon-btn delete" onclick="deleteTask(${t.id})">🗑️</button>
+      </div>
+    </div>`
+  }).join('');
+}
+
+async function toggleTask(id) {
+  await fetch(`/api/tasks/${id}/toggle`, {method:'POST'});
+  loadTasks();
+}
+
+async function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  await fetch(`/api/tasks/${id}`, {method:'DELETE'});
+  loadTasks();
+}
+
+function openTaskModal() {
+  editTaskId = null;
+  document.getElementById('taskModalTitle').textContent = 'New Task';
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskPriority').value = 'medium';
+  document.getElementById('taskDue').value = '';
+  document.getElementById('taskReminder').value = '';
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function openEditTask(id, title, desc, priority, due, reminder) {
+  editTaskId = id;
+  document.getElementById('taskModalTitle').textContent = 'Edit Task';
+  document.getElementById('taskTitle').value = title;
+  document.getElementById('taskDesc').value = desc;
+  document.getElementById('taskPriority').value = priority;
+  document.getElementById('taskDue').value = due;
+  document.getElementById('taskReminder').value = reminder || '';
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function closeTaskModal() { document.getElementById('taskModal').classList.remove('open'); }
+
+async function saveTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) return alert('Please enter a task title.');
+  const body = {
+    title,
+    description: document.getElementById('taskDesc').value,
+    priority: document.getElementById('taskPriority').value,
+    due_date: document.getElementById('taskDue').value || null,
+    reminder_time: document.getElementById('taskReminder').value || null
+  };
+  if (editTaskId) {
+    await fetch(`/api/tasks/${editTaskId}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  } else {
+    await fetch('/api/tasks/', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  }
+  closeTaskModal();
+  loadTasks();
+}
+
+document.getElementById('habitModal').addEventListener('click', e => { if(e.target === e.currentTarget) closeHabitModal(); });
+document.getElementById('taskModal').addEventListener('click', e => { if(e.target === e.currentTarget) closeTaskModal(); });
+</script>
+</body>
+</html>
