@@ -14,6 +14,8 @@ class TaskCreate(BaseModel):
     priority: Optional[str] = "medium"
     due_date: Optional[date] = None
     reminder_time: Optional[str] = None
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
@@ -22,11 +24,12 @@ class TaskUpdate(BaseModel):
     due_date: Optional[date] = None
     is_done: Optional[bool] = None
     reminder_time: Optional[str] = None
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
 
 @router.get("/")
 def get_tasks(db: Session = Depends(get_db)):
-    tasks = db.query(Task).order_by(Task.created_at.desc()).all()
-    return tasks
+    return db.query(Task).order_by(Task.created_at.desc()).all()
 
 @router.post("/")
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
