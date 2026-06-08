@@ -26,7 +26,9 @@ class Task(Base):
     title = Column(String, nullable=False)
     description = Column(String, default="")
     is_done = Column(Boolean, default=False)
-    priority = Column(String, default="medium")  # low, medium, high
+    priority = Column(String, default="medium")
     due_date = Column(Date, nullable=True)
-    reminder_time = Column(String, nullable=True)  # format: "HH:MM"
+    reminder_time = Column(String, nullable=True)
+    user_email = Column(String, nullable=True)
+    user_name = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
