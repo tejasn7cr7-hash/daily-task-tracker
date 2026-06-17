@@ -31,7 +31,7 @@ class Task(Base):
     due_date = Column(Date, nullable=True)
     reminder_time = Column(String, nullable=True)
 
-  email = Column(String, nullable=True)
-  email_sent = Column(Boolean, default=False)
+    email = Column(String, nullable=True)
+    email_sent = Column(Boolean, default=False)
 
-  created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now())
