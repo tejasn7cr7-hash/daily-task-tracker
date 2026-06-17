@@ -55,20 +55,20 @@ def check_reminders():
         if task_key in notified_today:
             continue
 
-        if current_time == reminder_time:
-            print(f"[{current_time}] 🔔 Reminder: {task['title']}")
+      if current_time == reminder_time:
+          print(f"[{current_time}] 🔔 Reminder: {task['title']}")
 
-            send_notification(task['title'], reminder_time)
+          send_notification(task['title'], reminder_time)
 
-        if task.get("email"):
-            print("Sending email to:", task["email"])
+          if task.get("email"):
+              print("Sending email to:", task["email"])
 
-            send_reminder_email(
-                task["email"],
-                task["title"]
-            )
-            notified_today.add(task_key)
+              send_reminder_email(
+                  task["email"],
+                  task["title"]
+              )
 
+      notified_today.add(task_key)
 def main():
     print("=" * 50)
     print("  Daily Task Tracker — Reminder Service")
