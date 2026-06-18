@@ -37,6 +37,12 @@ async def reminder_loop():
             db = SessionLocal()
 
             current_time = datetime.now().strftime("%H:%M")
+            print("SERVER TIME:", current_time)
+
+            for task in tasks_list:
+                print(
+                    f"Task={task.title} Reminder={task.reminder_time}"
+                )
 
             tasks_list = db.query(models.Task).filter(
                 models.Task.is_done == False,
