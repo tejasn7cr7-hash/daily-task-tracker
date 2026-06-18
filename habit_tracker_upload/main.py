@@ -37,17 +37,15 @@ async def reminder_loop():
         try:
             db = SessionLocal()
 
-            current_time = datetime.now().strftime("%H:%M")
+            current_time = datetime.now(
+                 ZoneInfo("Asia/Kolkata")
+            ).strftime("%H:%M")
+
             print("SERVER TIME:", current_time)
 
-            for task in tasks_list:
-                print(
-                    f"Task={task.title} Reminder={task.reminder_time}"
-                )
-
             tasks_list = db.query(models.Task).filter(
-                models.Task.is_done == False,
-                models.Task.email_sent == False
+              models.Task.is_done == False,
+              models.Task.email_sent == False
             ).all()
 
             for task in tasks_list:
@@ -70,7 +68,7 @@ async def reminder_loop():
                     task.email_sent = True
 
             db.commit()
-            db.close()
+            db.close()    
 
         except Exception as e:
             print("Reminder Error:", e)
