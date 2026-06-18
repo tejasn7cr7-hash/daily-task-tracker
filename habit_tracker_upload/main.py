@@ -38,49 +38,45 @@ async def reminder_loop():
             db = SessionLocal()
 
             current_time = datetime.now(
-                 ZoneInfo("Asia/Kolkata")
+                ZoneInfo("Asia/Kolkata")
             ).strftime("%H:%M")
 
             print("SERVER TIME:", current_time)
 
             tasks_list = db.query(models.Task).filter(
-              models.Task.is_done == False,
-              models.Task.email_sent == False
+                models.Task.is_done == False,
+                models.Task.email_sent == False
             ).all()
 
-           for task in tasks_list:
+            for task in tasks_list:
 
-               print(
-                   f"CHECKING -> {task.title} | Reminder={task.reminder_time} | Current={current_time}"
-               )
+                print(
+                    f"CHECKING -> {task.title} | Reminder={task.reminder_time} | Current={current_time}"
+                )
 
-              if (
-                  task.reminder_time
-                  and task.email
-                  and task.reminder_time == current_time
-              ):
-                  print("MATCH FOUND")
+                if (
+                    task.reminder_time
+                    and task.email
+                    and task.reminder_time == current_time
+                ):
 
-                  print(
-                      f"Sending reminder for {task.title} to {task.email}"
-                  )
+                    print("MATCH FOUND")
 
-                  send_reminder_email(
-                      task.email,
-                      task.title
-                  )
+                    print(
+                        f"Sending reminder for {task.title} to {task.email}"
+                    )
+
+                    send_reminder_email(
+                        task.email,
+                        task.title
+                    )
 
                     task.email_sent = True
 
             db.commit()
-            db.close()    
+            db.close()
 
         except Exception as e:
             print("Reminder Error:", e)
 
         await asyncio.sleep(30)
-
-
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(reminder_loop())
