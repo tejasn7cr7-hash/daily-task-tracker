@@ -48,22 +48,27 @@ async def reminder_loop():
               models.Task.email_sent == False
             ).all()
 
-            for task in tasks_list:
+           for task in tasks_list:
 
-                if (
-                    task.reminder_time
-                    and task.email
-                    and task.reminder_time == current_time
-                ):
+               print(
+                   f"CHECKING -> {task.title} | Reminder={task.reminder_time} | Current={current_time}"
+               )
 
-                    print(
-                        f"Sending reminder for {task.title} to {task.email}"
-                    )
+              if (
+                  task.reminder_time
+                  and task.email
+                  and task.reminder_time == current_time
+              ):
+                  print("MATCH FOUND")
 
-                    send_reminder_email(
-                        task.email,
-                        task.title
-                    )
+                  print(
+                      f"Sending reminder for {task.title} to {task.email}"
+                  )
+
+                  send_reminder_email(
+                      task.email,
+                      task.title
+                  )
 
                     task.email_sent = True
 
