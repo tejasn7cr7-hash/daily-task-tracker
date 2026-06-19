@@ -47,6 +47,15 @@ async def reminder_loop():
             ).strftime("%H:%M")
 
             print("SERVER TIME:", current_time)
+            print("BEFORE QUERY")
+
+            tasks_list = db.query(models.Task).filter(
+                models.Task.is_done == False,
+                models.Task.email_sent == False
+            ).all()
+
+            print("AFTER QUERY")
+            print("TASK COUNT:", len(tasks_list))
 
             tasks_list = db.query(models.Task).filter(
                 models.Task.is_done == False,
@@ -85,3 +94,4 @@ async def reminder_loop():
             print("Reminder Error:", e)
 
         await asyncio.sleep(30)
+        print("LOOP COMPLETE")
