@@ -66,9 +66,9 @@ def check_reminders():
                 send_reminder_email(
                     task["email"],
                     task["title"]
-               )
+                )
 
-           notified_today.add(task_key)
+            notified_today.add(task_key)
 def main():
     print("=" * 50)
     print("  Daily Task Tracker — Reminder Service")
